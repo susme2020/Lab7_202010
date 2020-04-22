@@ -27,9 +27,6 @@ from ADT import list as lt
 from ADT import orderedmap as map
 from DataStructures import listiterator as it
 
-import sys
-
-
 """
 La vista se encarga de la interacción con el usuario
 Presenta el menu de opciones  y  por cada seleccion
@@ -39,10 +36,13 @@ operación solicitada
 
 
 def printMenu():
-    print("Bienvenido al Laboratorio 7")
+    print("\nBienvenido al Laboratorio 7")
     print("1- Cargar información")
-    print("2- Contar nodos y enlances cargados ")
+    print("2- Contar nodos y enlances cargados")
     print("3- Consultar cantidad de clusters (componentes conectados)")
+    print("4- Insertar un nodo (vértice)")
+    print("5- Crear un enlace (arco)")
+    print("6- DFS")
     print("0- Salir")
 
 
@@ -55,7 +55,7 @@ def initCatalog ():
 
 def loadData (catalog):
     """
-    Carga los libros en la estructura de datos
+    Carga los vuelos en la estructura de datos
     """
     controller.loadData(catalog)
 
@@ -64,19 +64,52 @@ def loadData (catalog):
 Menu principal 
 """ 
 def main():
+    datos_cargados = False
     while True: 
         printMenu()
+        if not datos_cargados:
+            print("\nTodavía no se han cargado los datos")
         inputs =input('Seleccione una opción para continuar\n')
-        if int(inputs[0])==1:
-            print("Cargando información de los archivos ....")
-            catalog = initCatalog ()
-            loadData (catalog)
-        elif int(inputs[0])==2:
-            nodes,edges = controller.countNodesEdges(catalog) 
-            print("El grafo tiene: ", nodes," nodos y", edges," enlaces")
-        elif int(inputs[0])==3:
-            ccs = controller.countConnectedComponents(catalog)
-            print("El grafo tiene :", ccs, 'componentes conectados')
+        if int(inputs[0])==1: # 1- Cargar información
+            if datos_cargados:
+                print("Ya se han cargado los datos previamente")
+            else:
+                print("Cargando información de los archivos ....")
+                catalog = initCatalog ()
+                loadData (catalog)
+                datos_cargados = True
+        elif int(inputs[0])==2: # 2- Contar nodos y enlances cargados
+            if datos_cargados:
+                nodes,edges = controller.countNodesEdges(catalog) 
+                print("El grafo tiene: ", nodes," nodos y", edges," enlaces")
+            else:
+                print("No ha cargado los datos todavía")
+        elif int(inputs[0])==3: # 3- Consultar cantidad de clusters (componentes conectados)
+            if datos_cargados:
+                ccs = controller.countConnectedComponents(catalog)
+                print("El grafo tiene :", ccs, 'componentes conectados')
+            else:
+                print("No ha cargado los datos todavía")
+        elif int(inputs[0])==4: # 4- Insertar un nodo (vértice)
+            if datos_cargados:
+                vertice = input("Digite el vértice que desea agregar a los datos: ")
+                controller.addFlightNode_user(catalog, vertice)
+            else:
+                print("No ha cargado los datos todavía")
+        elif int(inputs[0])==5: # 5- Crear un enlace (arco)
+            if datos_cargados:
+                vertice1 = input("Digite el vértice fuente del enlace: ")
+                vertice2 = input("Digite el vértice destino del enlace: ")
+                valor = int(input("Digite el valor del enlace que desea crear: "))
+                controller.addFlightEdge_user(catalog, vertice1, vertice2, valor)
+            else:
+                print("No ha cargado los datos todavía")
+        elif int(inputs[0])==6: # 6- DFS
+            if datos_cargados:
+                vertice = input("Digite el vértice fuente del DFS: ")
+                controller.DFS(catalog, vertice)
+            else:
+                print("No ha cargado los datos todavía")
         else:
             sys.exit(0)
     sys.exit(0)

@@ -27,6 +27,7 @@ from ADT import map as map
 from ADT import list as lt
 from DataStructures import listiterator as it
 from datetime import datetime
+from DataStructures import DFS as dfs
 
 """
 Se define la estructura de un catálogo de libros.
@@ -40,8 +41,11 @@ def newCatalog():
     """
     Inicializa el catálogo y retorna el catalogo inicializado.
     """
-    rgraph = g.newGraph(5500,compareByKey)
-    catalog = {'reviewGraph':rgraph}    
+    #rgraph = g.newGraph(5500,compareByKey)
+    fgraph = g.newGraph(111353,compareByKey)
+    catalog = {}
+    #catalog['reviewGraph'] = rgraph
+    catalog['flightGraph'] = fgraph
     return catalog
 
 
@@ -60,23 +64,61 @@ def addReviewEdge (catalog, row):
     """
     g.addEdge (catalog['reviewGraph'], row['book_id'], row['user_id'], row['rating'])
 
+def addFlightNode(catalog, row):
+    """
+    Adiciona un nodo para almacenar un vuelo. 
+    """
+    if not g.containsVertex(catalog['flightGraph'], row['VERTEX']):
+        g.insertVertex (catalog['flightGraph'], row['VERTEX'])
+
+def addFlightEdge (catalog, row):
+    """
+    Adiciona un enlace para conectar dos vuelos
+    """
+    g.addEdge (catalog['flightGraph'], row['SOURCE'], row['DEST'], row['DISTANCE'])
+
+def addFlightNode_user(catalog, vertice):
+    if not g.containsVertex(catalog['flightGraph'], vertice):
+        g.insertVertex (catalog['flightGraph'], vertice)
+        return False
+    else:
+        return True
+
+def addFlightEdge_user(catalog, vertice1, vertice2, valor):
+    g.addEdge (catalog['flightGraph'], vertice1, vertice2, valor)
 
 def countNodesEdges (catalog):
     """
     Retorna la cantidad de nodos y enlaces del grafo de revisiones
     """
-    nodes = g.numVertex(catalog['reviewGraph'])
-    edges = g.numEdges(catalog['reviewGraph'])
+    #nodes = g.numVertex(catalog['reviewGraph'])
+    #edges = g.numEdges(catalog['reviewGraph'])
+
+    nodes = g.numVertex(catalog['flightGraph'])
+    edges = g.numEdges(catalog['flightGraph'])
 
     return nodes,edges
 
 def countConnectedComponents (catalog):
     """
-    Retorna la cantidad de componentes conectados del grafo de revisiones
+    Retorna la cantidad de componentes conectados de un grafo.
     """
-    pass
+    grafo = catalog["flightGraph"]
+    vertices = g.vertices(grafo)
+    componentes_conectados = 0
+    iterator = it.newIterator(vertices)
+    while  it.hasNext(iterator):
+        element = it.next(iterator)
+        if g.degree(grafo, element) > 0:
+            componentes_conectados += 1
+    return componentes_conectados
 
-
+def DFS (catalog, vertice_fuente):
+    if not g.containsVertex(catalog['flightGraph'], vertice_fuente):
+        return False
+    else:
+        return dfs.newDFS(catalog["flightGraph"], vertice_fuente)
+    
 
 
 # Funciones de comparacion
